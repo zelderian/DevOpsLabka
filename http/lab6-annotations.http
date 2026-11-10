@@ -1,0 +1,87 @@
+### 1. ADMIN: GET /annotated/hello -> 200  (@PreAuthorize isAuthenticated)
+GET http://localhost:8080/api/v1/annotated/hello
+Authorization: Basic admin admin
+Accept: application/json
+
+> {% client.test("1. ADMIN hello -> 200", () => client.assert(response.status === 200)); %}
+
+###
+
+### 2. USER: GET /annotated/hello -> 200  (@PreAuthorize isAuthenticated)
+GET http://localhost:8080/api/v1/annotated/hello
+Authorization: Basic user user
+Accept: application/json
+
+> {% client.test("2. USER hello -> 200", () => client.assert(response.status === 200)); %}
+
+###
+
+### 3. USER: GET /annotated/user-zone -> 200  (@PreAuthorize hasRole USER)
+GET http://localhost:8080/api/v1/annotated/user-zone
+Authorization: Basic user user
+Accept: application/json
+
+> {% client.test("3. USER user-zone -> 200", () => client.assert(response.status === 200)); %}
+
+###
+
+### 4. ADMIN: GET /annotated/user-zone -> 403  (@PreAuthorize hasRole USER)
+GET http://localhost:8080/api/v1/annotated/user-zone
+Authorization: Basic admin admin
+Accept: application/json
+
+> {% client.test("4. ADMIN user-zone -> 403", () => client.assert(response.status === 403)); %}
+
+###
+
+### 5. MANAGER: GET /annotated/manager-zone -> 200  (@RolesAllowed MANAGER, ADMIN)
+GET http://localhost:8080/api/v1/annotated/manager-zone
+Authorization: Basic manager manager
+Accept: application/json
+
+> {% client.test("5. MANAGER manager-zone -> 200", () => client.assert(response.status === 200)); %}
+
+###
+
+### 6. USER: GET /annotated/manager-zone -> 403  (@RolesAllowed MANAGER, ADMIN)
+GET http://localhost:8080/api/v1/annotated/manager-zone
+Authorization: Basic user user
+Accept: application/json
+
+> {% client.test("6. USER manager-zone -> 403", () => client.assert(response.status === 403)); %}
+
+###
+
+### 7. ADMIN: GET /annotated/admin-zone -> 200  (@Secured ROLE_ADMIN)
+GET http://localhost:8080/api/v1/annotated/admin-zone
+Authorization: Basic admin admin
+Accept: application/json
+
+> {% client.test("7. ADMIN admin-zone -> 200", () => client.assert(response.status === 200)); %}
+
+###
+
+### 8. MANAGER: GET /annotated/admin-zone -> 403  (@Secured ROLE_ADMIN)
+GET http://localhost:8080/api/v1/annotated/admin-zone
+Authorization: Basic manager manager
+Accept: application/json
+
+> {% client.test("8. MANAGER admin-zone -> 403", () => client.assert(response.status === 403)); %}
+
+###
+
+### 9. USER: GET /annotated/profile/user -> 200  (@PreAuthorize owner or ADMIN)
+GET http://localhost:8080/api/v1/annotated/profile/user
+Authorization: Basic user user
+Accept: application/json
+
+> {% client.test("9. USER profile/user -> 200", () => client.assert(response.status === 200)); %}
+
+###
+
+### 10. USER: GET /annotated/profile/manager -> 403  (@PreAuthorize owner or ADMIN)
+GET http://localhost:8080/api/v1/annotated/profile/manager
+Authorization: Basic user user
+Accept: application/json
+
+> {% client.test("10. USER profile/manager -> 403", () => client.assert(response.status === 403)); %}

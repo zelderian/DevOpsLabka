@@ -1,0 +1,125 @@
+### Login ADMIN -> save token
+POST http://localhost:8080/api/v1/auth/authenticate
+Content-Type: application/json
+
+{ "email": "admin@mail.com", "password": "admin" }
+
+> {% client.global.set("adminToken", response.body.token); %}
+
+###
+
+### Login MANAGER -> save token
+POST http://localhost:8080/api/v1/auth/authenticate
+Content-Type: application/json
+
+{ "email": "manager@mail.com", "password": "manager" }
+
+> {% client.global.set("managerToken", response.body.token); %}
+
+###
+
+### Login USER -> save token
+POST http://localhost:8080/api/v1/auth/authenticate
+Content-Type: application/json
+
+{ "email": "user@mail.com", "password": "user" }
+
+> {% client.global.set("userToken", response.body.token); %}
+
+###
+
+### 1. USER: GET all items -> 200
+GET http://localhost:8080/api/v1/items
+Authorization: Bearer {{userToken}}
+Accept: application/json
+
+> {% client.test("1. USER: GET all items -> 200", () => client.assert(response.status === 200)); %}
+
+###
+
+### 2. USER: POST item -> 403
+POST http://localhost:8080/api/v1/items
+Authorization: Bearer {{userToken}}
+Accept: application/json
+Content-Type: application/json
+
+{ "name": "JWT user item", "description": "must be denied" }
+
+> {% client.test("2. USER: POST item -> 403", () => client.assert(response.status === 403)); %}
+
+###
+
+### 3. MANAGER: POST item -> 201
+POST http://localhost:8080/api/v1/items
+Authorization: Bearer {{managerToken}}
+Accept: application/json
+Content-Type: application/json
+
+{ "name": "JWT item", "description": "created with JWT" }
+
+> {% client.global.set("id", response.body.id); client.test("3. MANAGER: POST item -> 201", () => client.assert(response.status === 201)); %}
+
+###
+
+### 4. MANAGER: PUT item -> 200
+PUT http://localhost:8080/api/v1/items/{{id}}
+Authorization: Bearer {{managerToken}}
+Accept: application/json
+Content-Type: application/json
+
+{ "name": "JWT item v2", "description": "updated with JWT" }
+
+> {% client.test("4. MANAGER: PUT item -> 200", () => client.assert(response.status === 200)); %}
+
+###
+
+### 5. MANAGER: DELETE item -> 403
+DELETE http://localhost:8080/api/v1/items/{{id}}
+Authorization: Bearer {{managerToken}}
+Accept: application/json
+
+> {% client.test("5. MANAGER: DELETE item -> 403", () => client.assert(response.status === 403)); %}
+
+###
+
+### 6. ADMIN: DELETE item -> 204
+DELETE http://localhost:8080/api/v1/items/{{id}}
+Authorization: Bearer {{adminToken}}
+Accept: application/json
+
+> {% client.test("6. ADMIN: DELETE item -> 204", () => client.assert(response.status === 204)); %}
+
+###
+
+### 7. USER: GET /annotated/admin-zone -> 403
+GET http://localhost:8080/api/v1/annotated/admin-zone
+Authorization: Bearer {{userToken}}
+Accept: application/json
+
+> {% client.test("7. USER: GET /annotated/admin-zone -> 403", () => client.assert(response.status === 403)); %}
+
+###
+
+### 8. ADMIN: GET /annotated/admin-zone -> 200
+GET http://localhost:8080/api/v1/annotated/admin-zone
+Authorization: Bearer {{adminToken}}
+Accept: application/json
+
+> {% client.test("8. ADMIN: GET /annotated/admin-zone -> 200", () => client.assert(response.status === 200)); %}
+
+###
+
+### 9. MANAGER: GET /annotated/manager-zone -> 200
+GET http://localhost:8080/api/v1/annotated/manager-zone
+Authorization: Bearer {{managerToken}}
+Accept: application/json
+
+> {% client.test("9. MANAGER: GET /annotated/manager-zone -> 200", () => client.assert(response.status === 200)); %}
+
+###
+
+### 10. No token: GET all items -> 401
+GET http://localhost:8080/api/v1/items
+Accept: application/json
+
+> {% client.test("10. No token: GET all items -> 401", () => client.assert(response.status === 401)); %}
