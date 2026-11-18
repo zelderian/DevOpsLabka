@@ -1,0 +1,28 @@
+{{- if .Values.hooks.preUpgradeDbCheck }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "devopslabka.fullname" . }}-pre-upgrade-db-check
+  labels:
+    {{- include "devopslabka.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 120
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-check
+          image: "{{ .Values.mongo.image.repository }}:{{ .Values.mongo.image.tag }}"
+          command:
+            - mongosh
+            - --quiet
+            - --host
+            - {{ include "devopslabka.fullname" . }}-mongo
+            - --eval
+            - "print('MongoDB ping before upgrade to revision {{ .Release.Revision }}: ' + db.adminCommand('ping').ok)"
+{{- end }}

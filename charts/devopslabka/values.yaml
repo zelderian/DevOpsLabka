@@ -1,0 +1,61 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  tag: ""
+  pullPolicy: IfNotPresent
+
+backend:
+  image:
+    repository: ghcr.io/zelderian/devopslabka-backend
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 8080
+  resources:
+    requests: {cpu: 200m, memory: 384Mi}
+    limits: {cpu: "1", memory: 768Mi}
+  config:
+    APP_CSRF_ENABLED: "true"
+    JWT_EXPIRATION_MS: "3600000"
+    LOGGING_LEVEL_ROOT: "INFO"
+
+frontend:
+  image:
+    repository: ghcr.io/zelderian/devopslabka-frontend
+  replicaCount: 1
+  service:
+    type: NodePort
+    port: 80
+  resources:
+    requests: {cpu: 50m, memory: 32Mi}
+    limits: {cpu: 200m, memory: 128Mi}
+
+mongo:
+  image:
+    repository: mongo
+    tag: "7"
+  resources:
+    requests: {cpu: 100m, memory: 256Mi}
+    limits: {cpu: 500m, memory: 512Mi}
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: ""
+
+secrets:
+  mongodbUri: ""
+  jwtSecret: "dev-only-jwt-secret-key-for-hs384-signing-change-me"
+
+existingSecret: ""
+
+ingress:
+  enabled: false
+  className: nginx
+  host: devopslabka.local
+
+hooks:
+  preUpgradeDbCheck: true
+
+tests:
+  enabled: true

@@ -1,0 +1,25 @@
+{{- if .Values.tests.enabled }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "devopslabka.fullname" . }}-test-connection
+  labels:
+    {{- include "devopslabka.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  restartPolicy: Never
+  containers:
+    - name: curl
+      image: curlimages/curl:8.11.1
+      command: ["sh", "-c"]
+      args:
+        - |
+          set -e
+          echo "backend /health:"
+          curl -sf http://{{ include "devopslabka.fullname" . }}-backend:{{ .Values.backend.service.port }}/health
+          echo
+          echo "frontend /:"
+          curl -sf -o /dev/null -w "%{http_code}\n" http://{{ include "devopslabka.fullname" . }}-frontend:{{ .Values.frontend.service.port }}/
+{{- end }}

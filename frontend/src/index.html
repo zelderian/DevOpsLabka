@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DevOpsLabka — Items</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <h1>DevOpsLabka</h1>
+    <p class="subtitle">Frontend service → backend (Spring Boot) → MongoDB</p>
+    <p id="message" class="message" role="status"></p>
+
+    <section id="login">
+      <h2>Вхід</h2>
+      <form id="login-form">
+        <label>Email <input id="email" type="email" value="admin@mail.com" required></label>
+        <label>Пароль <input id="password" type="password" required></label>
+        <button type="submit">Увійти</button>
+      </form>
+      <p class="hint">Тестові користувачі: admin@mail.com / admin, manager@mail.com / manager, user@mail.com / user</p>
+    </section>
+
+    <section id="items" hidden>
+      <div class="toolbar">
+        <span>Ви увійшли як <strong id="who"></strong></span>
+        <button id="logout" type="button">Вийти</button>
+      </div>
+
+      <form id="item-form" class="inline">
+        <input id="name" placeholder="Назва" maxlength="100">
+        <input id="description" placeholder="Опис">
+        <button type="submit">Додати</button>
+      </form>
+
+      <table>
+        <thead>
+          <tr><th>Назва</th><th>Опис</th><th>Автор</th><th>Створено</th><th></th></tr>
+        </thead>
+        <tbody id="items-body"></tbody>
+      </table>
+      <p id="empty" class="hint">Поки що немає жодного запису.</p>
+    </section>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

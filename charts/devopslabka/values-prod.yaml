@@ -1,0 +1,23 @@
+image:
+  tag: "1.1.0"
+backend:
+  replicaCount: 3
+  resources:
+    requests: {cpu: 500m, memory: 512Mi}
+    limits: {cpu: "2", memory: 1Gi}
+  config:
+    JWT_EXPIRATION_MS: "900000"
+    LOGGING_LEVEL_ROOT: "WARN"
+frontend:
+  replicaCount: 2
+  service:
+    type: ClusterIP
+  resources:
+    requests: {cpu: 100m, memory: 64Mi}
+    limits: {cpu: 500m, memory: 256Mi}
+mongo:
+  persistence:
+    size: 5Gi
+ingress:
+  enabled: true
+  host: devopslabka.local

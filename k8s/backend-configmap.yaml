@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: devopslabka
+  labels:
+    app: backend
+    app.kubernetes.io/part-of: devopslabka
+data:
+  APP_CSRF_ENABLED: "true"
+  JWT_EXPIRATION_MS: "3600000"
+  LOGGING_LEVEL_ROOT: "INFO"

@@ -1,0 +1,17 @@
+FROM node:22-alpine AS build
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+ARG APP_VERSION=dev
+ENV APP_VERSION=${APP_VERSION}
+RUN npm run build
+
+FROM nginxinc/nginx-unprivileged:stable-alpine
+ENV BACKEND_URL=http://backend:8080
+COPY nginx.conf /etc/nginx/templates/default.conf.template
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 8080

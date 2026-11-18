@@ -1,0 +1,19 @@
+DevOpsLabka {{ include "devopslabka.imageTag" . }} is installed as release "{{ .Release.Name }}" in namespace "{{ .Release.Namespace }}".
+
+Wait for the pods:
+  kubectl get pods -n {{ .Release.Namespace }} -w
+
+Open the application:
+{{- if .Values.ingress.enabled }}
+  1. Add "127.0.0.1 {{ .Values.ingress.host }}" to the hosts file
+  2. Run "minikube tunnel" in a separate terminal
+  3. Open http://{{ .Values.ingress.host }}
+{{- else if eq .Values.frontend.service.type "NodePort" }}
+  minikube service {{ include "devopslabka.fullname" . }}-frontend -n {{ .Release.Namespace }}
+{{- else }}
+  kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "devopslabka.fullname" . }}-frontend 8081:{{ .Values.frontend.service.port }}
+  then open http://localhost:8081
+{{- end }}
+
+Login: admin@mail.com / admin
+Check the release: helm test {{ .Release.Name }} -n {{ .Release.Namespace }}
