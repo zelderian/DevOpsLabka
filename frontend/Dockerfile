@@ -10,6 +10,9 @@ ENV APP_VERSION=${APP_VERSION}
 RUN npm run build
 
 FROM nginxinc/nginx-unprivileged:stable-alpine
+USER root
+RUN apk upgrade --no-cache
+USER 101
 ENV BACKEND_URL=http://backend:8080
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
