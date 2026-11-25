@@ -25,7 +25,7 @@ ConfigMap, Secret, Service-и, Ingress. Додатково є pre-upgrade хук
 | `backend.config.*` | `APP_CSRF_ENABLED`, `JWT_EXPIRATION_MS`, `LOGGING_LEVEL_ROOT` | ConfigMap → змінні оточення |
 | `frontend.image.repository` | `ghcr.io/zelderian/devopslabka-frontend` | репозиторій образу frontend |
 | `frontend.replicaCount` | `1` | кількість реплік frontend |
-| `frontend.service.type` / `.port` | `NodePort` / `80` | Service frontend |
+| `frontend.service.type` / `.port` / `.nodePort` | `NodePort` / `80` / `30080` | Service frontend (доступ з хоста: http://localhost:30080) |
 | `frontend.resources` | 50m/32Mi → 200m/128Mi | requests / limits |
 | `mongo.image.repository` / `.tag` | `mongo` / `7` | образ MongoDB |
 | `mongo.persistence.enabled` | `true` | PVC для даних (false → emptyDir) |
@@ -45,7 +45,7 @@ ConfigMap, Secret, Service-и, Ingress. Додатково є pre-upgrade хук
 | тег образу | `1.0.0` | `1.1.0` |
 | репліки backend / frontend | 1 / 1 | 3 / 2 |
 | ресурси backend | 100m/256Mi → 500m/512Mi | 500m/512Mi → 2/1Gi |
-| доступ | NodePort | Ingress `devopslabka.local` |
+| доступ | NodePort | NodePort + Ingress `devopslabka.local` |
 | логування | DEBUG | WARN |
 
 ## Встановлення

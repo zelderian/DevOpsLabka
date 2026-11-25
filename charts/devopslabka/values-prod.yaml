@@ -10,14 +10,9 @@ backend:
     LOGGING_LEVEL_ROOT: "WARN"
 frontend:
   replicaCount: 2
-  service:
-    type: ClusterIP
   resources:
     requests: {cpu: 100m, memory: 64Mi}
     limits: {cpu: 500m, memory: 256Mi}
-mongo:
-  persistence:
-    size: 5Gi
 ingress:
   enabled: true
   host: devopslabka.local

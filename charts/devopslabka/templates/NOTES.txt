@@ -6,10 +6,10 @@ Wait for the pods:
 Open the application:
 {{- if .Values.ingress.enabled }}
   1. Add "127.0.0.1 {{ .Values.ingress.host }}" to the hosts file
-  2. Run "minikube tunnel" in a separate terminal
-  3. Open http://{{ .Values.ingress.host }}
+  2. Open http://{{ .Values.ingress.host }}
+  (or without Ingress: http://localhost:{{ .Values.frontend.service.nodePort }})
 {{- else if eq .Values.frontend.service.type "NodePort" }}
-  minikube service {{ include "devopslabka.fullname" . }}-frontend -n {{ .Release.Namespace }}
+  http://localhost:{{ .Values.frontend.service.nodePort }}
 {{- else }}
   kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "devopslabka.fullname" . }}-frontend 8081:{{ .Values.frontend.service.port }}
   then open http://localhost:8081
